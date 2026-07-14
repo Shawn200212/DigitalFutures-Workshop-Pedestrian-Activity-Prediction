@@ -135,10 +135,15 @@ The VLM audit step requires the `SILICONFLOW_API_KEY` environment variable (no k
 
 ## Interactive visualization
 
-`viz_portable/` is a zero-dependency offline web app: double-click `index.html` to explore 2D
-top-down prediction maps and an immersive 3D view — with prediction / ground-truth / residual /
-hotspot layers, tile & split filters, node hover details, per-variable influence panels, and PNG
-export. No Python, Node or model dependencies required.
+**▶ Live demo: [open the explorer in your browser](https://shawn200212.github.io/DigitalFutures-Workshop-Pedestrian-Activity-Prediction/viz_portable/)** (GitHub Pages)
+
+[![Interactive 2D prediction map](docs/figures/viz_portable_2d_map.jpg)](https://shawn200212.github.io/DigitalFutures-Workshop-Pedestrian-Activity-Prediction/viz_portable/)
+
+`viz_portable/` is a zero-dependency web app — the screenshot above is its 2D top-down prediction
+map (all 100 tiles, viridis = predicted pedestrian intensity). It also offers an immersive 3D view,
+prediction / ground-truth / residual / hotspot layers, tile & split filters, node hover details,
+per-variable influence panels, and PNG export. Run it locally by double-clicking
+`viz_portable/index.html` — no Python, Node or model dependencies required.
 
 ## Planning applications
 
