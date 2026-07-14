@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GraphSAGE 行人活动强度可视化</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <header class="brand">
+          <div class="brand-mark">GS</div>
+          <div>
+            <h1>行人活动强度模型</h1>
+            <p>GraphSAGE Regression · Shanghai Tiles 001-100</p>
+          </div>
+        </header>
+
+        <section class="control-card">
+          <span class="label">视角模式</span>
+          <div class="segmented view-switch" id="viewButtons">
+            <button type="button" data-view="2d" class="active">2D 俯视</button>
+            <button type="button" data-view="3d">3D 沉浸</button>
+          </div>
+        </section>
+
+        <section class="control-card">
+          <label for="layerSelect">地图图层</label>
+          <select id="layerSelect">
+            <option value="pred">连续预测强度</option>
+            <option value="true">真实标签强度</option>
+            <option value="residual">残差</option>
+            <option value="absError">绝对误差</option>
+            <option value="y5Score">y >= 5 热点分数</option>
+            <option value="y3Score">y >= 3 中高分数</option>
+            <option value="y5Class">y >= 5 分类</option>
+            <option value="y3Class">y >= 3 分类</option>
+          </select>
+        </section>
+
+        <section class="control-card">
+          <span class="label">Split</span>
+          <div class="segmented" id="splitButtons">
+            <button type="button" data-split="train" class="active">Train</button>
+            <button type="button" data-split="val" class="active">Val</button>
+            <button type="button" data-split="test" class="active">Test</button>
+          </div>
+        </section>
+
+        <section class="control-card">
+          <label for="tileSelect">Tile</label>
+          <select id="tileSelect"></select>
+        </section>
+
+        <section class="control-card check-row">
+          <label><input id="labeledOnly" type="checkbox" /> 仅标签节点</label>
+          <label><input id="hotspotOnly" type="checkbox" /> 仅热点预测</label>
+          <label><input id="autoOrbit" type="checkbox" checked /> 3D 自动环绕</label>
+        </section>
+
+        <section class="control-card sliders">
+          <label for="pointSize">点大小 <span id="pointSizeValue">2.4</span></label>
+          <input id="pointSize" type="range" min="1" max="7" step="0.2" value="2.4" />
+          <label for="heightScale">3D 高度 <span id="heightScaleValue">1.0</span></label>
+          <input id="heightScale" type="range" min="0.2" max="3" step="0.1" value="1" />
+        </section>
+
+        <section class="control-card">
+          <label for="colorMax">色阶上限</label>
+          <select id="colorMax">
+            <option value="auto">自动</option>
+            <option value="p95">P95</option>
+            <option value="p99" selected>P99</option>
+            <option value="fixed5">5</option>
+            <option value="fixed10">10</option>
+          </select>
+        </section>
+
+        <section class="control-card button-grid">
+          <button id="resetView" type="button">重置视图</button>
+          <button id="exportPng" type="button">导出 PNG</button>
+        </section>
+
+        <section class="control-card">
+          <span class="label">视频镜头</span>
+          <div class="shot-list">
+            <button type="button" data-shot="overview">1 预测总览</button>
+            <button type="button" data-shot="immersive">2 3D 沉浸</button>
+            <button type="button" data-shot="hotspot">3 热点分布</button>
+            <button type="button" data-shot="residual">4 残差诊断</button>
+            <button type="button" data-shot="importance">5 变量影响</button>
+          </div>
+        </section>
+      </aside>
+
+      <main class="workspace">
+        <section class="hero">
+          <div>
+            <p class="eyebrow">Model Visualization Console</p>
+            <h2>上海街道行人活动强度预测</h2>
+          </div>
+          <div class="metric-strip">
+            <div class="metric">
+              <span>Test R2</span>
+              <strong id="metricR2">-</strong>
+            </div>
+            <div class="metric">
+              <span>Test RMSE</span>
+              <strong id="metricRmse">-</strong>
+            </div>
+            <div class="metric">
+              <span>Binary y5 AUC</span>
+              <strong id="metricY5">-</strong>
+            </div>
+            <div class="metric">
+              <span>可见节点</span>
+              <strong id="visibleCount">-</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="main-grid">
+          <div class="map-panel">
+            <div class="panel-toolbar">
+              <div>
+                <h2 id="mapTitle">连续预测强度</h2>
+                <p id="mapSubtitle">2D top-down spatial view</p>
+              </div>
+              <div class="legend" id="legend"></div>
+            </div>
+            <canvas id="mapCanvas" width="1280" height="880"></canvas>
+            <div class="scene-hint" id="sceneHint">滚轮缩放 · 拖拽平移 / 3D 旋转 · 悬停查看节点</div>
+            <div class="tooltip" id="tooltip"></div>
+          </div>
+
+          <aside class="inspector">
+            <section class="panel selection-panel">
+              <h2>当前选择</h2>
+              <div id="selectionDetails" class="details">移动鼠标查看节点</div>
+            </section>
+
+            <section class="panel">
+              <h2>变量组影响</h2>
+              <div id="groupBars" class="bars"></div>
+            </section>
+
+            <section class="panel">
+              <h2>单变量影响</h2>
+              <div id="featureBars" class="bars compact"></div>
+            </section>
+
+            <section class="panel">
+              <h2>Tile 误差排行</h2>
+              <div id="tileList" class="tile-list"></div>
+            </section>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script src="./data/app_data.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

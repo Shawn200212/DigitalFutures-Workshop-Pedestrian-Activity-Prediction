@@ -1,0 +1,28 @@
+# ---- 大体量数据与结果（不随仓库分发，仅排除根目录下的）----
+/data/
+/dataset/
+/outputs/
+
+# ---- 模型权重 ----
+*.pt
+*.pth
+
+# ---- 旧版存档 ----
+deprecated_legacy_demo_20260702/
+
+# ---- Python ----
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
+
+# ---- 系统与编辑器 ----
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/
+
+# ---- 例外：README 引用的成果图允许入库 ----
+!docs/figures/*.png
