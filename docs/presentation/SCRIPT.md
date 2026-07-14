@@ -19,6 +19,8 @@ In other words, **can partial visibility lead to full-network understanding?**
 
 ## Slide 2 (0:45–1:10) — Team
 
+*(Slide image withheld from this repository to protect team members' privacy.)*
+
 This is our team of seven members. Our work is driven by a shared question: what do we know about streets that are not directly visible in data?
 
 ## Slide 3 (1:10–2:05) — Uneven urban data

@@ -41,6 +41,27 @@ places driven by functional and temporal dynamics beyond the current feature set
 also provide a **planning diagnosis framework**: combining predicted vs. observed values flags
 *renewal-priority* streets whose predicted vitality far exceeds what is observed.
 
+<details>
+<summary><b>More figures</b> — training dashboard, CV sweeps, calibration & error analysis (click to expand)</summary>
+
+| Training dashboard | Hotspot score map (calibrated) |
+| :---: | :---: |
+| ![dashboard](docs/figures/fig_dashboard.png) | ![score](docs/figures/fig_spatial_score.png) |
+
+| 5-fold CV config ranking | Per-fold validation RMSE |
+| :---: | :---: |
+| ![cvrank](docs/figures/fig_cv_config_ranking.png) | ![cvfold](docs/figures/fig_cv_fold_val_rmse.png) |
+
+| Hotspot probability distribution | Error by intensity bin | Confusion (binary y≥5, test) |
+| :---: | :---: | :---: |
+| ![hist](docs/figures/fig_hotspot_probability_hist.png) | ![err](docs/figures/fig_error_by_y_bin.png) | ![conf](docs/figures/fig_confusion_test.png) |
+
+| Feature correlation (top-20) |
+| :---: |
+| ![corr](docs/figures/fig_feature_correlation_top20.png) |
+
+</details>
+
 ## Presentation
 
 - 🎤 Full talk script (≈12 min): [docs/presentation/SCRIPT.md](docs/presentation/SCRIPT.md)
@@ -126,9 +147,17 @@ export. No Python, Node or model dependencies required.
 3. **Renewal screening** — streets where the model says "this should be busy" but observation says otherwise are exactly the ones worth field investigation.
 4. **Low-data city transfer** — freeze the feature extractor, fine-tune the regression head with a handful of local labels.
 
-## Team
+## Team & my role
 
-**The Capture (真相捕捉)** — Ruixiao Zhang, Jiarui Yang, Weixi Feng, Peizheng Hao, Shuzhen Chen, Yuhan Yang, Hengyuan Rao.
+This is a **team project** by the 7-member team *The Capture* at the DigitalFUTURES Workshop.
+This repository is maintained by **Ruixiao Zhang**; my responsibilities in the project were:
+
+- **GraphSAGE training with AI-assisted programming** — building and iterating the GNN training code (`scripts/gnn/`), loss/feature/target-transform experiments, CV sweeps and early-stopping strategy;
+- **Initial model architecture** — the inductive GraphSAGE setup: graph tiling with core/buffer masking, 60-dim feature specification, graph-level splits;
+- **Model result visualization** — post-hoc analysis figures and the offline interactive 2D/3D explorer (`viz_portable/`);
+- **Network-wide data collection & pre-processing** — crawling multi-source data across the study area and the cleaning/manifest/dedup pipeline that prepares raw inputs before they enter the dataset (`scripts/prepare_yolo_manifest_from_tiles.py`, `scripts/qc/`).
+
+Other parts of the project (e.g. parts of label auditing, POI validation and the final deck design) were contributed by teammates and are credited to the team as a whole.
 
 ---
 
