@@ -1,93 +1,103 @@
-# 基于建成环境的街道行人活动强度图神经网络预测
+# From Partial Street-View Labels to Network-Wide Pedestrian Activity Prediction
 
-**SVI-Supervised Pedestrian Intensity Prediction with Inductive GraphSAGE**
+**A GraphSAGE-Based Framework for Urban Renewal Diagnosis**
+*DigitalFUTURES Workshop project · Team **The Capture** (7 members) · Shanghai, 100 graph tiles*
 
-> Predicting street-level pedestrian activity intensity in Shanghai using only built-environment,
-> transit-accessibility and road-network-topology features. Street View Imagery (SVI) is used **only
-> as a supervision signal** (YOLO11 person detection + VLM quality audit), never as a model input —
-> so the trained model can genuinely infer pedestrian intensity for streets *without* any SVI
-> coverage (residential inner roads, branch roads, alleys).
+![Title slide](docs/presentation/slides/slide_01.jpg)
+
+> If we only observe part of a city through street-view imagery, can we still infer how pedestrian
+> activity is distributed across the **entire** urban network? This project answers with an
+> inductive **GraphSAGE** framework: street-view imagery (SVI) supervises, the built environment
+> predicts — so streets *without* any imagery (residential lanes, back streets, alleys) become
+> genuinely inferable.
 
 ---
 
-## 项目简介
+## Highlights
 
-本项目构建了一个基于 **GraphSAGE 的归纳式图神经网络**：以路段为节点、路网拓扑为边，仅使用
-**建成环境 + 交通可达性 + 路网拓扑** 共 60 维自动化特征，预测城市街道的行人活动强度相对水平。
+- **Inductive graph learning** — training and test graphs are topologically independent; the model learns a transferable neighborhood-aggregation function rather than memorizing one city district.
+- **SVI as labels only, never as input** — panoramas are processed from four orthogonal views with YOLO11 pedestrian detection plus a VLM quality audit, then aggregated to road-segment labels. Because imagery never enters the feature space, the model extends to unobserved streets.
+- **Zero manual semantic annotation** — no road-class tagging, no gate labeling, no super-nodes; all 60 node features come from automated geometric computation.
+- **Spatial tiling** — Shanghai within the Outer Ring Road is split into 100 tiles of 1.5 km × 1.5 km cores with 800 m buffers ("ghost nodes" join message passing but not the loss).
 
-核心设计原则：
+## Results
 
-- **归纳式学习（Inductive）**——训练图与测试图在拓扑上完全独立，模型学习的是跨空间可迁移的邻域聚合函数；
-- **街景仅作标签，不作特征**——街景经 YOLO11 行人检测 + VLM 复核后生成路段级活动强度标签，仅为有街景覆盖的核心节点提供监督信号，因此模型对**无街景区域具备真正的推断能力**；
-- **零人工语义标注**——不识别道路等级、不标注出入口、不建超节点，全部依赖几何计算与自动特征工程；
-- **空间瓦片化**——上海外环内切分为 100 个 1.5km×1.5km 独立图样本（含 800m 缓冲区幽灵节点），图级划分训练/验证/测试集。
+| Metric | Value |
+| --- | --- |
+| Test-set Pearson correlation (regression) | **0.554** |
+| High-vitality recall (binary screening, threshold 1.12) | **74.5%** |
+| External validation | Predicted hotspots align strongly with POI evidence of commerce, transit and public services |
 
-## 成果预览
-
-| 热点概率空间分布（y≥5 二分类） | 回归预测 vs 真实值 |
+| Predicted hotspot probability (y ≥ 5) | Regression: predicted vs. true |
 | :---: | :---: |
 | ![hotspot](docs/figures/fig_spatial_hotspot_probability.png) | ![pred](docs/figures/fig_pred_vs_true.png) |
 
-| 离散化空间分类结果 | Top-20 特征重要性 |
+| Discretized spatial classes | Top-20 feature importance |
 | :---: | :---: |
 | ![spatial](docs/figures/fig_spatial_class.png) | ![importance](docs/figures/fig_feature_importance_top20.png) |
 
-更多诊断图（训练面板、误差分箱等）见 `docs/figures/`。
+Errors are not random: they concentrate around transport hubs and large commercial complexes —
+places driven by functional and temporal dynamics beyond the current feature set. We therefore
+also provide a **planning diagnosis framework**: combining predicted vs. observed values flags
+*renewal-priority* streets whose predicted vitality far exceeds what is observed.
 
-## 技术管线
+## Presentation
 
-```
-阶段一：标签生产（街景 → 路段级监督标签）
-  街景全景图（四正交视角投影）
-    → YOLO11 行人计数（app/batch_detect.py）
-    → YOLO11 姿态估计（app/batch_pose.py）
-    → 检测/姿态合并（app/merge_detect_pose.py）
-    → 自动 QC 路由：auto-accept / VLM 复核 / 人工（scripts/qc/auto_qc_router.py）
-    → SiliconFlow VLM 审核（scripts/qc/vlm_audit_images_siliconflow.py）
-    → 最终图片标签解析（scripts/qc/resolve_final_counts.py）
-    → 按经纬度 snap 至最近路段并聚合（scripts/qc/aggregate_final_to_segment_labels.py）
+- 🎤 Full talk script (≈12 min): [docs/presentation/SCRIPT.md](docs/presentation/SCRIPT.md)
+- 🖼 All 23 slides: [docs/presentation/slides/](docs/presentation/slides/)
 
-阶段二：图学习（建成环境 → 行人活动强度）
-  路网打断成路段节点 + 几何交叉建边
-    → 60 维特征：道路本体(3) + 三级缓冲建筑环境(27) + 交通可达(6) + 人口(6) + sDNA 拓扑(18)
-    → GraphSAGE 回归（scripts/gnn/train_graphsage_npz.py）
-    → GraphSAGE 热点分类（scripts/gnn/train_graphsage_classifier_npz.py）
-    → 5-fold 图级交叉验证 / 超参数扫描（scripts/gnn/run_graphsage_cv_sweep.py）
-    → 特征重要性 / 后处理离散化 / 结果可视化
-```
-
-## 仓库结构
+## Pipeline
 
 ```
-├── app/                      # YOLO11 批量检测、姿态估计、结果合并
+Stage 1 — Label production (SVI → segment-level supervision)
+  Street-view panoramas (4 orthogonal views)
+    → YOLO11 person counting            app/batch_detect.py
+    → YOLO11 pose estimation            app/batch_pose.py
+    → merge detection + pose            app/merge_detect_pose.py
+    → auto QC routing                   scripts/qc/auto_qc_router.py
+    → VLM audit (SiliconFlow)           scripts/qc/vlm_audit_images_siliconflow.py
+    → final image-level labels          scripts/qc/resolve_final_counts.py
+    → snap & aggregate to segments      scripts/qc/aggregate_final_to_segment_labels.py
+
+Stage 2 — Graph learning (built environment → pedestrian activity)
+  Road network split into segment nodes + intersection edges
+    → 60-dim features: geometry(3) + buildings@3 buffers(27) + transit(6) + population(6) + sDNA topology(18)
+    → GraphSAGE regression              scripts/gnn/train_graphsage_npz.py
+    → GraphSAGE hotspot classifier      scripts/gnn/train_graphsage_classifier_npz.py
+    → 5-fold graph-level CV / sweeps    scripts/gnn/run_graphsage_cv_sweep.py
+    → feature importance, post-hoc discretization, visualization
+```
+
+## Repository structure
+
+```
+├── app/                    # YOLO11 batch detection, pose estimation, merging
 ├── scripts/
-│   ├── gnn/                  # GraphSAGE 训练、CV 扫描、特征重要性、后处理
-│   ├── qc/                   # QC 路由、VLM 审核、标签解析与路段聚合
-│   └── ...                   # manifest 构建、增量批次、全瓦片编排
-├── GraphSAGE_行人强度可视化_便携版_*/   # 离线交互式可视化网页（2D/3D，双击即用）
+│   ├── gnn/                # GraphSAGE training, CV sweeps, importance, post-processing
+│   ├── qc/                 # QC routing, VLM audit, label resolution & aggregation
+│   └── ...                 # manifest building, delta batches, orchestration
+├── viz_portable/           # offline interactive 2D/3D result explorer (double-click index.html)
 ├── docs/
-│   ├── WORKFLOW.md           # 完整命令行工作流（原 README）
-│   └── figures/              # 成果图
-├── 上海城市街道行人活动强度图神经网络预测_Demo技术大纲_0702.md   # 技术大纲全文
+│   ├── WORKFLOW.md         # full command-line workflow (all training configs)
+│   ├── technical_outline_zh.md   # full technical outline (Chinese)
+│   ├── presentation/       # talk script + 23 slides
+│   └── figures/            # result figures
 └── requirements.txt
 ```
 
-> **注意**：`data/`（约 49 GB 街景瓦片）、`dataset/`（预构建图样本 .npz）、`outputs/`（训练结果）
-> 与 YOLO 模型权重（`*.pt`）体积过大，不随仓库分发。目录结构与复现方法见
-> [docs/WORKFLOW.md](docs/WORKFLOW.md)。
+> **Note** — `data/` (~49 GB street-view tiles), `dataset/` (prebuilt graph samples), `outputs/`
+> (training runs) and YOLO weights (`*.pt`) are too large to distribute with the repo.
+> Reproduction steps live in [docs/WORKFLOW.md](docs/WORKFLOW.md).
 
-## 快速开始
+## Quick start
 
 ```bash
 pip install -r requirements.txt
-# GNN 训练额外需要 PyTorch Geometric（按 CUDA 版本安装）
+# GNN training additionally needs PyTorch Geometric (match your CUDA version)
 pip install torch_geometric
 ```
 
-标签生产管线与训练的完整命令（含当前最优超参数配置）见 **[docs/WORKFLOW.md](docs/WORKFLOW.md)**，
-100 瓦片数据接入说明见 **[README_100tile_yolo_vlm_pipeline.md](README_100tile_yolo_vlm_pipeline.md)**。
-
-最小示例——训练 GraphSAGE 回归：
+Minimal example — train the GraphSAGE regressor:
 
 ```bash
 python scripts/gnn/train_graphsage_npz.py \
@@ -100,33 +110,26 @@ python scripts/gnn/train_graphsage_npz.py \
   --device cuda
 ```
 
-VLM 审核需要设置环境变量 `SILICONFLOW_API_KEY`（仓库中不含任何密钥）。
+The VLM audit step requires the `SILICONFLOW_API_KEY` environment variable (no keys are stored in this repo). Full commands, including the current best hyper-parameter configurations, are in [docs/WORKFLOW.md](docs/WORKFLOW.md); the 100-tile data onboarding guide is in [README_100tile_yolo_vlm_pipeline.md](README_100tile_yolo_vlm_pipeline.md).
 
-## 交互式可视化
+## Interactive visualization
 
-`GraphSAGE_行人强度可视化_便携版_*` 是一个零依赖的离线网页：双击 `index.html` 即可浏览
-2D 俯视预测图与 3D 沉浸式结果，支持预测/真值/残差/热点等多图层切换、tile 与 split 筛选、
-节点悬停详情、变量影响展示与 PNG 导出。
+`viz_portable/` is a zero-dependency offline web app: double-click `index.html` to explore 2D
+top-down prediction maps and an immersive 3D view — with prediction / ground-truth / residual /
+hotspot layers, tile & split filters, node hover details, per-variable influence panels, and PNG
+export. No Python, Node or model dependencies required.
 
-## 应用前景
+## Planning applications
 
-1. **规划阶段预判**——仅凭建筑方案 + 路网 + 站点选址，即可输出规划路段的行人活力热力图，把活力评估从"建成后调研"前移到"方案比选"；
-2. **方案行人友好性对比**——量化"功能—形态—人流"耦合关系，支持步行优先的设计决策；
-3. **活力洼地筛查**——"模型说这里理应人多、实际却冷清"的路段，正是值得调查干预的对象；
-4. **低数据城市迁移**——冻结特征提取层、用少量本地标签微调回归头，即可迁移到只有路网/建筑/站点数据的城市。
+1. **Ex-ante evaluation** — predict pedestrian corridors and cold spots for planned districts from building programs, road networks and station siting alone, before anything is built.
+2. **Scheme comparison** — quantify the "function–form–footfall" coupling to support walkability-first design decisions.
+3. **Renewal screening** — streets where the model says "this should be busy" but observation says otherwise are exactly the ones worth field investigation.
+4. **Low-data city transfer** — freeze the feature extractor, fine-tune the regression head with a handful of local labels.
 
-## Roadmap
+## Team
 
-- [ ] 整理 `dataset/SHdataset` 样例子集（1–2 个瓦片）供快速复现
-- [ ] 发布训练好的模型权重与 normalizer
-- [ ] 可视化网页在线部署（GitHub Pages）
-- [ ] 英文完整文档
-
-## 关于作者
-
-中央美术学院设计学院 · 沉浸体验与游戏设计研究方向硕士在读。
-研究兴趣：游戏引擎实时创作 × 具身智能 × 城市数据。
+**The Capture (真相捕捉)** — Ruixiao Zhang, Jiarui Yang, Weixi Feng, Peizheng Hao, Shuzhen Chen, Yuhan Yang, Hengyuan Rao.
 
 ---
 
-*本仓库为研究 Demo，代码与文档持续整理中，欢迎 Issue 交流。*
+*Research demo — code and documentation are being organized continuously. Issues and discussions welcome.*

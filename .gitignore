@@ -1,7 +1,8 @@
-# ---- 大体量数据与结果（不随仓库分发，仅排除根目录下的）----
+# ---- large data & results (root-level only, not distributed with the repo) ----
 /data/
 /dataset/
 /outputs/
+/Presantation/
 
 # ---- 模型权重 ----
 *.pt
