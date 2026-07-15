@@ -3,13 +3,19 @@
 **A GraphSAGE-Based Framework for Urban Renewal Diagnosis**
 *DigitalFUTURES Workshop project · Team **The Capture** (7 members) · Shanghai, 100 graph tiles*
 
-![Title slide](docs/presentation/slides/slide_01.jpg)
+[![Watch the video](https://img.shields.io/badge/▶_Watch_the_project_video-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/BVTGtNkeBZ8)
+[![Live explorer](https://img.shields.io/badge/⬡_Live_interactive_explorer-46E60D?style=for-the-badge&logoColor=black)](https://shawn200212.github.io/DigitalFutures-Workshop-Pedestrian-Activity-Prediction/viz_portable/)
+[![Portfolio](https://img.shields.io/badge/◆_Portfolio-ruixiaozhang.com-0a0b09?style=for-the-badge)](https://ruixiaozhang.com)
+
+[![Title slide](docs/presentation/slides/slide_01.jpg)](https://youtu.be/BVTGtNkeBZ8)
 
 > If we only observe part of a city through street-view imagery, can we still infer how pedestrian
 > activity is distributed across the **entire** urban network? This project answers with an
 > inductive **GraphSAGE** framework: street-view imagery (SVI) supervises, the built environment
 > predicts — so streets *without* any imagery (residential lanes, back streets, alleys) become
 > genuinely inferable.
+
+**Quick links** — 🎬 [Project video on YouTube](https://youtu.be/BVTGtNkeBZ8) · ⬡ [Interactive 2D/3D explorer](https://shawn200212.github.io/DigitalFutures-Workshop-Pedestrian-Activity-Prediction/viz_portable/) · 📄 [Talk script](docs/presentation/SCRIPT.md) · 🎨 [More of my work — ruixiaozhang.com](https://ruixiaozhang.com)
 
 ---
 
@@ -62,7 +68,11 @@ also provide a **planning diagnosis framework**: combining predicted vs. observe
 
 </details>
 
-## Presentation
+## Presentation & video
+
+**🎬 [Watch the full project video on YouTube →](https://youtu.be/BVTGtNkeBZ8)**
+
+[![Project video](https://img.youtube.com/vi/BVTGtNkeBZ8/maxresdefault.jpg)](https://youtu.be/BVTGtNkeBZ8)
 
 - 🎤 Full talk script (≈12 min): [docs/presentation/SCRIPT.md](docs/presentation/SCRIPT.md)
 - 🖼 All 23 slides: [docs/presentation/slides/](docs/presentation/slides/)
@@ -163,6 +173,12 @@ This repository is maintained by **Ruixiao Zhang**; my responsibilities in the p
 - **Network-wide data collection & pre-processing** — crawling multi-source data across the study area and the cleaning/manifest/dedup pipeline that prepares raw inputs before they enter the dataset (`scripts/prepare_yolo_manifest_from_tiles.py`, `scripts/qc/`).
 
 Other parts of the project (e.g. parts of label auditing, POI validation and the final deck design) were contributed by teammates and are credited to the team as a whole.
+
+## More of my work
+
+🎨 **Portfolio — [ruixiaozhang.com](https://ruixiaozhang.com)** · game design, realtime animation, embodied AI and urban research
+🎬 **YouTube — [@ruixiaozhang](https://www.youtube.com/channel/UCyr-ubod7eNa6XhET25vdmw)** · project videos and gameplay demos
+💻 **GitHub — [Shawn200212](https://github.com/Shawn200212)**
 
 ---
 
