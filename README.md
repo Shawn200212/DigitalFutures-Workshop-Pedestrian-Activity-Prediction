@@ -80,6 +80,12 @@ also provide a **planning diagnosis framework**: combining predicted vs. observe
 ## Pipeline
 
 ```
+Stage 0 — Image acquisition (sampled road points → street-view imagery)
+  100 tiles of WGS-84 sample points        data_acquisition/tiles/*.csv
+    → panorama fetch + date selection      data_acquisition/stvscrawler/
+    → panorama → 4 × 720×720 views         data_acquisition/flat_images_pano.py
+    → batch over all tiles + manifests     data_acquisition/run_all_tiles.py
+
 Stage 1 — Label production (SVI → segment-level supervision)
   Street-view panoramas (4 orthogonal views)
     → YOLO11 person counting            app/batch_detect.py
@@ -102,6 +108,7 @@ Stage 2 — Graph learning (built environment → pedestrian activity)
 ## Repository structure
 
 ```
+├── data_acquisition/       # Stage 0 — street-view crawler + 100-tile sampling points (self-contained)
 ├── app/                    # YOLO11 batch detection, pose estimation, merging
 ├── scripts/
 │   ├── gnn/                # GraphSAGE training, CV sweeps, importance, post-processing
@@ -118,7 +125,10 @@ Stage 2 — Graph learning (built environment → pedestrian activity)
 
 > **Note** — `data/` (~49 GB street-view tiles), `dataset/` (prebuilt graph samples), `outputs/`
 > (training runs) and YOLO weights (`*.pt`) are too large to distribute with the repo.
-> Reproduction steps live in [docs/WORKFLOW.md](docs/WORKFLOW.md).
+> Reproduction steps live in [docs/WORKFLOW.md](docs/WORKFLOW.md). The imagery itself is not
+> redistributed, but the **acquisition code and the 100-tile sampling points** are — see
+> [data_acquisition/](data_acquisition/), which is kept isolated from the research pipeline
+> (its own requirements, no cross-imports, and not needed to run anything else here).
 
 ## Quick start
 
@@ -170,7 +180,7 @@ This repository is maintained by **Ruixiao Zhang**; my responsibilities in the p
 - **GraphSAGE training with AI-assisted programming** — building and iterating the GNN training code (`scripts/gnn/`), loss/feature/target-transform experiments, CV sweeps and early-stopping strategy;
 - **Initial model architecture** — the inductive GraphSAGE setup: graph tiling with core/buffer masking, 60-dim feature specification, graph-level splits;
 - **Model result visualization** — post-hoc analysis figures and the offline interactive 2D/3D explorer (`viz_portable/`);
-- **Network-wide data collection & pre-processing** — crawling multi-source data across the study area and the cleaning/manifest/dedup pipeline that prepares raw inputs before they enter the dataset (`scripts/prepare_yolo_manifest_from_tiles.py`, `scripts/qc/`).
+- **Network-wide data collection & pre-processing** — crawling multi-source data across the study area and the cleaning/manifest/dedup pipeline that prepares raw inputs before they enter the dataset (`data_acquisition/`, `scripts/prepare_yolo_manifest_from_tiles.py`, `scripts/qc/`). See [data_acquisition/README.md](data_acquisition/README.md) for what in that module is adapted from third-party crawler code and what is the project's own.
 
 Other parts of the project (e.g. parts of label auditing, POI validation and the final deck design) were contributed by teammates and are credited to the team as a whole.
 
