@@ -1,5 +1,7 @@
 # From Partial Street-View Labels to Network-Wide Pedestrian Activity Prediction
 
+**English** | [中文](README.zh-CN.md)
+
 **A GraphSAGE-Based Framework for Urban Renewal Diagnosis**
 *DigitalFUTURES Workshop project · Team **The Capture** (7 members) · Shanghai, 100 graph tiles*
 

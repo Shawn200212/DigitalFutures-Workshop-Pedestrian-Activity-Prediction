@@ -1,5 +1,7 @@
 # Stage 0 — Street-view image acquisition
 
+**English** | [中文](README.zh-CN.md)
+
 Upstream of everything in [`app/`](../app) and [`scripts/`](../scripts): this module turns a set of
 sampled road points into the panorama / perspective-view imagery that supplies the **labels** for
 the GraphSAGE model. It is deliberately kept **self-contained and isolated** from the research

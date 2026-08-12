@@ -1,41 +1,12 @@
-# README 先读我
+# Legacy README Entry / 旧版 README 入口
 
-这是上海街道行人活动强度 GraphSAGE 模型的离线可视化网页。
+This filename is retained so existing links do not break. The maintained
+documentation is available in two languages:
 
-## 快速打开
+- [English (default)](README.md)
+- [中文](README.zh-CN.md)
 
-双击：
+保留此文件名是为了避免已有链接失效。当前维护的文档分为两个语言版本：
 
-`打开模型可视化网页.bat`
-
-或者双击：
-
-`index.html`
-
-## 文件不要拆开
-
-请保持以下文件在同一个文件夹内：
-
-- `index.html`
-- `app.js`
-- `styles.css`
-- `data/app_data.js`
-- `打开模型可视化网页.bat`
-- `模型可视化网页使用与视频制作文档.md`
-
-## 主要功能
-
-- 2D 俯视空间预测图
-- 3D 沉浸式模型结果浏览
-- 连续预测、真实标签、残差、绝对误差、热点分数、热点分类图层
-- split 和 tile 筛选
-- 节点悬停详情
-- 变量组和单变量影响展示
-- PNG 截图导出
-- 视频制作镜头预设
-
-## 离线迁移
-
-把整个文件夹复制到其他电脑，或解压随附的 zip 后，双击 `打开模型可视化网页.bat` 即可使用。
-
-不需要安装 Python、Conda、Node 或任何模型依赖。
+- [English（默认页）](README.md)
+- [中文](README.zh-CN.md)
