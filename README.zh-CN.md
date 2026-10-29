@@ -1,6 +1,10 @@
-# 从局部街景标签到全路网行人活动预测
+[English](README.md) | [简体中文](README.zh-CN.md)
 
-[English](README.md) | **中文**
+<a id="from-partial-street-view-labels-to-network-wide-pedestrian-activity-prediction--从局部街景标签到全路网行人活动预测"></a>
+<a id="from-partial-street-view-labels-to-network-wide-pedestrian-activity-prediction"></a>
+<a id="从局部街景标签到全路网行人活动预测"></a>
+
+# 从局部街景标签到全路网行人活动预测
 
 **面向城市更新诊断的 GraphSAGE 框架**
 *DigitalFUTURES 工作营项目 · Team **The Capture**（7 人）· 上海，100 个图分块*
@@ -16,6 +20,16 @@
 > 本项目使用归纳式 **GraphSAGE** 回答这一问题：街景图像只提供监督标签，建成环境特征负责预测，
 > 因而没有街景的居住巷道、背街和小路也可被推断。
 
+[![从局部街景标签到全路网行人活动预测：图示](https://img.shields.io/badge/▶_Watch_the_project_video-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/BVTGtNkeBZ8)
+
+[![从局部街景标签到全路网行人活动预测：图示](https://img.shields.io/badge/⬡_Live_interactive_explorer-46E60D?style=for-the-badge&logoColor=black)](https://shawn200212.github.io/DigitalFutures-Workshop-Pedestrian-Activity-Prediction/viz_portable/)
+
+[![从局部街景标签到全路网行人活动预测：图示](https://img.shields.io/badge/◆_Portfolio-ruixiaozhang.com-0a0b09?style=for-the-badge)](https://ruixiaozhang.com)
+
+<a id="highlights--核心特点"></a>
+<a id="highlights"></a>
+<a id="核心特点"></a>
+
 ## 核心特点
 
 - **归纳式图学习：**训练图与测试图在拓扑上彼此独立；模型学习可迁移的邻域聚合函数，而不是
@@ -25,6 +39,10 @@
 - **零人工语义标注：**不手工标道路类型、出入口或超级节点；60 维节点特征全部由几何计算生成。
 - **空间分块：**上海外环内区域被划分为 100 个 1.5 km × 1.5 km 核心区，并附 800 m 缓冲区；
   “幽灵节点”参与消息传递，但不进入损失。
+
+<a id="results--结果"></a>
+<a id="results"></a>
+<a id="结果"></a>
 
 ## 结果
 
@@ -59,6 +77,18 @@
 
 </details>
 
+![结果：图示](docs/figures/fig_hotspot_probability_hist.png)
+
+![结果：图示](docs/figures/fig_error_by_y_bin.png)
+
+![结果：图示](docs/figures/fig_confusion_test.png)
+
+![结果：图示](docs/figures/fig_feature_correlation_top20.png)
+
+<a id="presentation--video--演示与视频"></a>
+<a id="presentation--video"></a>
+<a id="演示与视频"></a>
+
 ## 演示与视频
 
 **[观看完整项目视频](https://youtu.be/BVTGtNkeBZ8)**
@@ -67,6 +97,10 @@
 
 - 完整约 12 分钟演讲稿：[docs/presentation/SCRIPT.md](docs/presentation/SCRIPT.md)
 - 23 张幻灯片：[docs/presentation/slides/](docs/presentation/slides/)
+
+<a id="pipeline--流水线"></a>
+<a id="pipeline"></a>
+<a id="流水线"></a>
 
 ## 流水线
 
@@ -91,6 +125,10 @@
     → 五折图级交叉验证、特征重要性与可视化
 ```
 
+<a id="repository-structure--仓库结构"></a>
+<a id="repository-structure"></a>
+<a id="仓库结构"></a>
+
 ## 仓库结构
 
 ```text
@@ -107,6 +145,10 @@
 > `data/`（约 49 GB 街景分块）、`dataset/`（预构建图样本）、`outputs/`（训练运行）和
 > YOLO 权重过大，不随仓库分发。复现步骤见 [docs/WORKFLOW.md](docs/WORKFLOW.md)。
 > 图像不再分发，但采集代码和 100 分块采样点保存在 [data_acquisition/](data_acquisition/)。
+
+<a id="quick-start--快速开始"></a>
+<a id="quick-start"></a>
+<a id="快速开始"></a>
 
 ## 快速开始
 
@@ -132,6 +174,10 @@ VLM 审核需要 `SILICONFLOW_API_KEY` 环境变量，仓库不保存任何密�
 [docs/WORKFLOW.md](docs/WORKFLOW.md)，100 分块数据接入指南见
 [README_100tile_yolo_vlm_pipeline.md](README_100tile_yolo_vlm_pipeline.md)。
 
+<a id="interactive-visualization--交互式可视化"></a>
+<a id="interactive-visualization"></a>
+<a id="交互式可视化"></a>
+
 ## 交互式可视化
 
 **[在浏览器中打开在线 Demo](https://shawn200212.github.io/DigitalFutures-Workshop-Pedestrian-Activity-Prediction/viz_portable/)**
@@ -141,12 +187,20 @@ VLM 审核需要 `SILICONFLOW_API_KEY` 环境变量，仓库不保存任何密�
 `viz_portable/` 是零依赖网页：包含 100 个分块的 2D 俯视预测图、3D 视图、预测/真实值/残差/
 热点图层、分块筛选、节点详情、变量影响面板和 PNG 导出。也可以直接双击 `index.html` 离线运行。
 
+<a id="planning-applications--规划应用"></a>
+<a id="planning-applications"></a>
+<a id="规划应用"></a>
+
 ## 规划应用
 
 1. **事前评估：**在新区建成前，仅根据建筑功能、路网与站点布局预测行人走廊与冷点。
 2. **方案比较：**量化“功能—形态—人流”关系，支持步行优先决策。
 3. **更新筛查：**定位“模型认为应该繁忙、实际观测却不繁忙”的街道，供实地调查。
 4. **低数据城市迁移：**冻结特征提取器，用少量本地标签微调回归头。
+
+<a id="team--my-role--团队与我的职责"></a>
+<a id="team--my-role"></a>
+<a id="团队与我的职责"></a>
 
 ## 团队与我的职责
 
@@ -160,8 +214,14 @@ VLM 审核需要 `SILICONFLOW_API_KEY` 环境变量，仓库不保存任何密�
 
 标签审核、POI 验证和最终演示稿设计等其他部分由队友共同贡献，并统一归功于团队。
 
----
+采集与预处理模块位于 `data_acquisition/`、`scripts/prepare_yolo_manifest_from_tiles.py` 和 `scripts/qc/`。
+训练代码位于 `scripts/gnn/`。离线浏览器位于 `viz_portable/`。
+第三方采集代码与本项目工作的边界见[模块说明](data_acquisition/README.zh-CN.md)。
 
-更多作品：[ruixiaozhang.com](https://ruixiaozhang.com) ·
-[YouTube](https://www.youtube.com/channel/UCyr-ubod7eNa6XhET25vdmw) ·
-[GitHub](https://github.com/Shawn200212)
+<a id="more-of-my-work--更多作品"></a>
+<a id="more-of-my-work"></a>
+<a id="更多作品"></a>
+
+## 更多作品
+
+[作品集](https://ruixiaozhang.com) · [YouTube](https://www.youtube.com/channel/UCyr-ubod7eNa6XhET25vdmw) · [GitHub](https://github.com/Shawn200212)
